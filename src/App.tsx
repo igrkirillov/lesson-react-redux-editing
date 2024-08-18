@@ -1,12 +1,12 @@
 import './App.css'
 import {Outlet, Route, Routes, useNavigate, useParams} from "react-router";
 import {addWork, editWork, removeWork} from "./actions";
-import {Provider, useDispatch, useSelector, useStore} from "react-redux";
+import {Provider, useDispatch, useSelector} from "react-redux";
 import editIcon from "./assets/edit.png"
 import removeIcon from "./assets/remove.png"
 import {worksSelector} from "./selectors";
 import {Params} from "react-router-dom";
-import {AppState, store, Work} from "./appStore";
+import {store, Work} from "./appStore";
 import {FormEvent, useEffect, useRef} from "react";
 
 function App() {
