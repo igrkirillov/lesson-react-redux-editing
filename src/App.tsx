@@ -7,7 +7,7 @@ import removeIcon from "./assets/remove.png"
 import {worksSelector} from "./selectors";
 import {Params} from "react-router-dom";
 import {store, Work} from "./appStore";
-import {FormEvent, useEffect, useRef} from "react";
+import {FormEvent, MouseEvent, useEffect, useRef} from "react";
 
 function App() {
   return (
@@ -72,6 +72,10 @@ function EditWork() {
         dispatch(editWork({...currentWork, name: name, cost: cost}))
         navigate("/");
     }
+    const onCancel = (event: MouseEvent<HTMLInputElement>) => {
+        event.preventDefault();
+        navigate("/");
+    }
     const nameRef = useRef<HTMLInputElement>(null);
     useEffect(() => {
         nameRef.current?.focus();
@@ -82,7 +86,8 @@ function EditWork() {
                    defaultValue={currentWork.name} ref={nameRef} required={true}/>
             <input type="number" placeholder="Стоимость" name="cost" className="form-cost"
                    defaultValue={currentWork.cost} required={true}/>
-            <input type="submit" value="Сохранить изменения"/>
+            <input type="submit" value="Сохранить"/>
+            <input type="button" value="Отменить" onClick={onCancel}/>
         </form>
     )
 }
