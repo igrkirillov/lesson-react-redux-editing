@@ -1,4 +1,4 @@
-import {configureStore, createReducer} from "@reduxjs/toolkit";
+import {createStore, UnknownAction} from 'redux'
 import {addWork, editWork, removeWork, setFilter} from "./actions";
 
 export type AppState = {
@@ -12,26 +12,41 @@ export type Work = {
     cost: number
 }
 
-const rootReducer = createReducer({works: [], filter: ""} as AppState, (builder) => {
-    builder
-        .addCase(addWork, (state, action) => {
-            state.works.push(action.payload);
-        })
-        .addCase(editWork, (state, action) => {
-            const elementIndex = state.works.findIndex(w => w.id === action.payload.id);
+function reducer(state = {works: [], filter: ""} as AppState, action: UnknownAction) {
+    switch (action.type) {
+        case addWork: {
+            const payload = action["payload"] as Work;
+            return {...state, works: [...state.works, payload]};
+        }
+        case editWork: {
+            const payload = action["payload"] as Work;
+            const elementIndex = state.works.findIndex(w => w.id === payload.id);
             if (elementIndex >= 0) {
-                state.works[elementIndex] = action.payload;
+                const newArray = [...state.works];
+                newArray[elementIndex] = payload;
+                return {...state, works: [...newArray]};
+            } else {
+                return state;
             }
-        })
-        .addCase(removeWork, (state, action) => {
-            const elementIndex = state.works.findIndex(w => w.id === action.payload.id);
+        }
+        case removeWork: {
+            const payload = action["payload"] as Work;
+            const elementIndex = state.works.findIndex(w => w.id === payload.id);
             if (elementIndex >= 0) {
-                state.works.splice(elementIndex, 1);
+                const newArray = [...state.works];
+                newArray.splice(elementIndex, 1);
+                return {...state, works: [...newArray]};
+            } else {
+                return state;
             }
-        })
-        .addCase(setFilter, (state, action) => {
-            state.filter = action.payload;
-        })
-});
+        }
+        case setFilter: {
+            const payload = action["payload"] as string;
+            return {...state, filter: payload};
+        }
+        default:
+            return state
+    }
+}
 
-export const store = configureStore({reducer: rootReducer});
+export const store = createStore(reducer)

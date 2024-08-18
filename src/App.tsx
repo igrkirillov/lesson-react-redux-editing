@@ -51,7 +51,7 @@ function Filter() {
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
         const value = event.currentTarget.value;
-        dispatch(setFilter(value));
+        dispatch({"type": setFilter, "payload": value});
         activateOrDeactivateClearAction(value);
     }
     const onClearClick = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -60,7 +60,7 @@ function Filter() {
         if (inputElement) {
             const newValue = "";
             inputElement.value = newValue;
-            dispatch(setFilter(newValue));
+            dispatch({"type": setFilter, "payload": newValue});
             activateOrDeactivateClearAction(newValue);
         }
     }
@@ -84,7 +84,7 @@ function AddWork() {
         const form = event.currentTarget;
         const name = (form[0] as HTMLInputElement).value;
         const cost = (form[1] as HTMLInputElement).valueAsNumber;
-        dispatch(addWork({id: getNextId(works), name: name, cost: cost}))
+        dispatch({"type": addWork, "payload": {id: getNextId(works), name: name, cost: cost}});
         form.reset();
         navigate("/");
     }
@@ -113,7 +113,7 @@ function EditWork() {
         const form = event.currentTarget;
         const name = (form[0] as HTMLInputElement).value;
         const cost = (form[1] as HTMLInputElement).valueAsNumber;
-        dispatch(editWork({...currentWork, name: name, cost: cost}))
+        dispatch({"type": editWork, "payload": {...currentWork, name: name, cost: cost}});
         navigate("/");
     }
     const onCancel = (event: MouseEvent<HTMLInputElement>) => {
@@ -141,7 +141,7 @@ function WorkList() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const onRemoveWork = (work: Work) => {
-        dispatch(removeWork(work));
+        dispatch({"type": removeWork, "payload": work});
         navigate("/");
     }
     const onEditWork = (work: Work) => {
