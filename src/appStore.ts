@@ -2,7 +2,8 @@ import {configureStore, createReducer} from "@reduxjs/toolkit";
 import {addWork, editWork, removeWork} from "./actions";
 
 export type AppState = {
-    works: Work[]
+    works: Work[],
+    filter: string
 }
 
 export type Work = {

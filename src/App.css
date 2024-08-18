@@ -66,3 +66,21 @@
 .form-add-edit input:nth-child(n+2) {
   margin-left: 10px;
 }
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+.filter {
+  margin-top: 4px;
+}
+
+.filter-input {
+  margin-left: 4px;
+}
+
+.work-list {
+  margin-top: 4px;
+}

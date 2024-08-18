@@ -1,12 +1,12 @@
 import './App.css'
 import {Outlet, Route, Routes, useNavigate, useParams} from "react-router";
 import {addWork, editWork, removeWork} from "./actions";
-import {Provider, useDispatch, useSelector} from "react-redux";
+import {Provider, useDispatch, useSelector, useStore} from "react-redux";
 import editIcon from "./assets/edit.png"
 import removeIcon from "./assets/remove.png"
 import {worksSelector} from "./selectors";
 import {Params} from "react-router-dom";
-import {store, Work} from "./appStore";
+import {AppState, store, Work} from "./appStore";
 import {FormEvent, MouseEvent, useEffect, useRef} from "react";
 
 function App() {
@@ -21,14 +21,27 @@ function App() {
       </Provider>
   )
 }
+export default App
 
-export function Layout() {
+function Layout() {
   return (
       <div className="layout">
-        <Outlet></Outlet>
-        <WorkList></WorkList>
+          <Outlet></Outlet>
+          <Filter></Filter>
+          <WorkList></WorkList>
       </div>
   )
+}
+
+function Filter() {
+    const appState = useStore<AppState>().getState();
+
+    return (
+        <div className="filter">
+            <label htmlFor="filter" className="filter-label">Фильтр:</label>
+            <input className="filter-input" name="filter"/>
+        </div>
+    )
 }
 
 function AddWork() {
@@ -149,5 +162,3 @@ function retrieveIdFromParams(params: Params<string>): number {
         throw Error(`Не определён id: ${id}`);
     }
 }
-
-export default App
