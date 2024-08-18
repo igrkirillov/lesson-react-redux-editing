@@ -1,12 +1,13 @@
 import './App.css'
 import {Outlet, Route, Routes, useNavigate, useParams} from "react-router";
-import {addWork, removeWork} from "./actions";
+import {addWork, editWork, removeWork} from "./actions";
 import {Provider, useDispatch, useSelector, useStore} from "react-redux";
 import editIcon from "./assets/edit.png"
 import removeIcon from "./assets/remove.png"
 import {worksSelector} from "./selectors";
 import {Params} from "react-router-dom";
 import {AppState, store, Work} from "./appStore";
+import {FormEvent, useEffect, useRef} from "react";
 
 function App() {
   return (
@@ -31,25 +32,59 @@ export function Layout() {
 }
 
 function AddWork() {
-    const appStore = useStore<AppState>();
+    const works = useSelector(worksSelector) as Work[];
     const dispatch = useDispatch();
-    const onSubmit = () => {
-        dispatch(addWork({id: getNextId(appStore.getState().works), name: "123", cost: 100}));
+    const navigate = useNavigate();
+    const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const name = (form[0] as HTMLInputElement).value;
+        const cost = (form[1] as HTMLInputElement).valueAsNumber;
+        dispatch(addWork({id: getNextId(works), name: name, cost: cost}))
+        form.reset();
+        navigate("/");
     }
-  return (
-      <div className="add_work">
-          <input type="button" onClick={onSubmit} value="Добавить работу"/>
-      </div>
-  )
+    const nameRef = useRef<HTMLInputElement>(null);
+    useEffect(() => {
+        nameRef.current?.focus();
+    });
+    return (
+        <form className="form-add-edit" onSubmit={onSubmit}>
+            <input type="text" placeholder="Название работы" name="name" className="form-name" ref={nameRef}
+                   required={true}/>
+            <input type="number" placeholder="Стоимость" name="cost" className="form-cost" required={true}/>
+            <input type="submit" value="Добавить работу"/>
+        </form>
+    )
 }
 
 function EditWork() {
+    const works = useSelector(worksSelector) as Work[];
+    const dispatch = useDispatch();
     const id = retrieveIdFromParams(useParams());
-  return (
-      <div className="edit_work">
-        Редактировать работу {id}
-      </div>
-  )
+    const currentWork = works.filter(w => w.id === id)[0];
+    const navigate = useNavigate();
+    const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const name = (form[0] as HTMLInputElement).value;
+        const cost = (form[1] as HTMLInputElement).valueAsNumber;
+        dispatch(editWork({...currentWork, name: name, cost: cost}))
+        navigate("/");
+    }
+    const nameRef = useRef<HTMLInputElement>(null);
+    useEffect(() => {
+        nameRef.current?.focus();
+    });
+    return (
+        <form className="form-add-edit" onSubmit={onSubmit}>
+            <input type="text" placeholder="Название работы" name="name" className="form-name"
+                   defaultValue={currentWork.name} ref={nameRef} required={true}/>
+            <input type="number" placeholder="Стоимость" name="cost" className="form-cost"
+                   defaultValue={currentWork.cost} required={true}/>
+            <input type="submit" value="Сохранить изменения"/>
+        </form>
+    )
 }
 
 function WorkList() {
@@ -58,6 +93,7 @@ function WorkList() {
     const navigate = useNavigate();
     const onRemoveWork = (work: Work) => {
         dispatch(removeWork(work));
+        navigate("/");
     }
     const onEditWork = (work: Work) => {
         navigate(`/edit/${work.id}`)
