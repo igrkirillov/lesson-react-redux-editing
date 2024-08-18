@@ -1,5 +1,6 @@
 import {createStore, UnknownAction} from 'redux'
 import {addWork, editWork, removeWork, setFilter} from "./actions";
+import { composeWithDevTools } from '@redux-devtools/extension'
 
 export type AppState = {
     works: Work[],
@@ -49,4 +50,4 @@ function reducer(state = {works: [], filter: ""} as AppState, action: UnknownAct
     }
 }
 
-export const store = createStore(reducer)
+export const store = createStore(reducer, composeWithDevTools())
