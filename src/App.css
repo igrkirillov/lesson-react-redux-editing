@@ -74,6 +74,7 @@
 }
 
 .filter {
+  position: relative;
   margin-top: 4px;
 }
 
@@ -83,4 +84,31 @@
 
 .work-list {
   margin-top: 4px;
+}
+
+.filter-active {
+  padding-right: 20px;
+}
+
+.filter-input {
+
+}
+
+.clear-action {
+  position: absolute;
+  right: 2px;
+  top: 4px;
+}
+
+.clear-action img {
+  width: 16px;
+  height: 16px;
+}
+
+.clear-action img:hover {
+  background-color: gray;
+}
+
+.display-none {
+  display: none;
 }

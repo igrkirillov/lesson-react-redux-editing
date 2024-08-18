@@ -8,6 +8,7 @@ import {worksFilteredSelector, worksSelector} from "./selectors";
 import {Params} from "react-router-dom";
 import {AppState, store, Work} from "./appStore";
 import {ChangeEvent, FormEvent, MouseEvent, useEffect, useRef} from "react";
+import clearIcon from "./assets/clear.png"
 
 function App() {
   return (
@@ -36,14 +37,40 @@ function Layout() {
 function Filter() {
     const {filter: filterValue} = useStore<AppState>().getState();
     const dispatch = useDispatch();
+    const clearActionRef = useRef<HTMLAnchorElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const activateOrDeactivateClearAction = (value: string) => {
+        if (value && clearActionRef.current?.classList.contains("display-none")) {
+            // activate
+            clearActionRef.current?.classList.remove("display-none");
+        } else if (!value && !clearActionRef.current?.classList.contains("display-none")){
+            // deactivate
+            clearActionRef.current?.classList.add("display-none");
+        }
+    }
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
-        dispatch(setFilter(event.currentTarget.value));
+        const value = event.currentTarget.value;
+        dispatch(setFilter(value));
+        activateOrDeactivateClearAction(value);
+    }
+    const onClearClick = (event: MouseEvent<HTMLAnchorElement>) => {
+        event.preventDefault();
+        const inputElement = inputRef.current;
+        if (inputElement) {
+            const newValue = "";
+            inputElement.value = newValue;
+            dispatch(setFilter(newValue));
+            activateOrDeactivateClearAction(newValue);
+        }
     }
     return (
         <div className="filter">
             <label htmlFor="filter" className="filter-label">Фильтр:</label>
-            <input className="filter-input" name="filter" defaultValue={filterValue} onChange={onChange}/>
+            <input className="filter-input" name="filter" defaultValue={filterValue} onChange={onChange} ref={inputRef}/>
+            <a href="#" onClick={onClearClick} className="clear-action display-none" ref={clearActionRef}>
+                <img src={clearIcon} alt="clear icon"/>
+            </a>
         </div>
     )
 }
@@ -122,7 +149,7 @@ function WorkList() {
     }
   return (
       <ul className="work_list">
-          {filteredWorks.map(w => (<WorkListItem work={w} onRemoveWork={onRemoveWork} onEditWork={onEditWork}></WorkListItem>))}
+          {filteredWorks.map(w => (<WorkListItem key={w.id} work={w} onRemoveWork={onRemoveWork} onEditWork={onEditWork}></WorkListItem>))}
       </ul>
   )
 }
