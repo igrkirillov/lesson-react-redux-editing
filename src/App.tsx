@@ -1,13 +1,13 @@
 import './App.css'
 import {Outlet, Route, Routes, useNavigate, useParams} from "react-router";
-import {addWork, editWork, removeWork} from "./actions";
+import {addWork, editWork, removeWork, setFilter} from "./actions";
 import {Provider, useDispatch, useSelector, useStore} from "react-redux";
 import editIcon from "./assets/edit.png"
 import removeIcon from "./assets/remove.png"
-import {worksSelector} from "./selectors";
+import {worksFilteredSelector, worksSelector} from "./selectors";
 import {Params} from "react-router-dom";
 import {AppState, store, Work} from "./appStore";
-import {FormEvent, MouseEvent, useEffect, useRef} from "react";
+import {ChangeEvent, FormEvent, MouseEvent, useEffect, useRef} from "react";
 
 function App() {
   return (
@@ -34,12 +34,16 @@ function Layout() {
 }
 
 function Filter() {
-    const appState = useStore<AppState>().getState();
-
+    const {filter: filterValue} = useStore<AppState>().getState();
+    const dispatch = useDispatch();
+    const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+        event.preventDefault();
+        dispatch(setFilter(event.currentTarget.value));
+    }
     return (
         <div className="filter">
             <label htmlFor="filter" className="filter-label">Фильтр:</label>
-            <input className="filter-input" name="filter"/>
+            <input className="filter-input" name="filter" defaultValue={filterValue} onChange={onChange}/>
         </div>
     )
 }
@@ -106,7 +110,7 @@ function EditWork() {
 }
 
 function WorkList() {
-    const works = useSelector(worksSelector) as Work[];
+    const filteredWorks = useSelector(worksFilteredSelector) as Work[];
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const onRemoveWork = (work: Work) => {
@@ -118,7 +122,7 @@ function WorkList() {
     }
   return (
       <ul className="work_list">
-          {works.map(w => (<WorkListItem work={w} onRemoveWork={onRemoveWork} onEditWork={onEditWork}></WorkListItem>))}
+          {filteredWorks.map(w => (<WorkListItem work={w} onRemoveWork={onRemoveWork} onEditWork={onEditWork}></WorkListItem>))}
       </ul>
   )
 }

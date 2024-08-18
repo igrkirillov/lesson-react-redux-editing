@@ -1,5 +1,5 @@
 import {configureStore, createReducer} from "@reduxjs/toolkit";
-import {addWork, editWork, removeWork} from "./actions";
+import {addWork, editWork, removeWork, setFilter} from "./actions";
 
 export type AppState = {
     works: Work[],
@@ -12,7 +12,7 @@ export type Work = {
     cost: number
 }
 
-const rootReducer = createReducer({works: []} as AppState, (builder) => {
+const rootReducer = createReducer({works: [], filter: ""} as AppState, (builder) => {
     builder
         .addCase(addWork, (state, action) => {
             state.works.push(action.payload);
@@ -28,6 +28,9 @@ const rootReducer = createReducer({works: []} as AppState, (builder) => {
             if (elementIndex >= 0) {
                 state.works.splice(elementIndex, 1);
             }
+        })
+        .addCase(setFilter, (state, action) => {
+            state.filter = action.payload;
         })
 });
 
